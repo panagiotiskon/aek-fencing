@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ξιφασκία ΑΕΚ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=GFS+Didot&family=Commissioner:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* Layout idea: a fencing piste you walk along. Ink-black opener and piste, paper-white reading sections, one AEK-gold accent used like the coloured lamp on a scoring box. */
+:root{
+  --ink:#131312;
+  --ink-2:#1d1d1b;
+  --paper:#f4f4f1;
+  --paper-2:#e9e9e4;
+  --gold:#f2c200;
+  --gold-text:#8a6d00;
+  --steel:#6c7077;
+  --rule:#d4d4ce;
+  --text:#1b1b1a;
+  --muted:#5d5f63;
+  --on-ink:#ecebe6;
+  --on-ink-muted:#a3a39d;
+  --ok:#2f7d4f;
+  --warn:#a0620a;
+  --risk:#a33a2b;
+  --display:"GFS Didot","Didot","Bodoni 72","Noto Serif",Georgia,serif;
+  --body:"Commissioner",system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans",sans-serif;
+  --measure:65ch;
+  --r:4px;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{animation:none!important;transition:none!important}}
+body{margin:0;background:var(--paper);color:var(--text);font-family:var(--body);font-size:17px;line-height:1.6;font-weight:400}
+img,svg{max-width:100%}
+a{color:inherit;text-decoration-color:var(--gold);text-decoration-thickness:2px;text-underline-offset:3px}
+a:hover{text-decoration-color:currentColor}
+:focus-visible{outline:3px solid var(--gold);outline-offset:3px;border-radius:2px}
+h1,h2,h3,h4{text-wrap:balance;margin:0;font-weight:400}
+p{margin:0}
+.wrap{width:min(1180px,100% - 40px);margin-inline:auto}
+.eyebrow{font-family:var(--body);font-size:12px;letter-spacing:.18em;text-transform:uppercase;font-weight:600;color:var(--gold-text)}
+.on-ink .eyebrow{color:var(--gold)}
+.num{font-variant-numeric:tabular-nums lining-nums}
+
+/* ---------- top bar ---------- */
+.bar{position:sticky;top:0;z-index:40;background:rgba(19,19,18,.94);backdrop-filter:blur(8px);color:var(--on-ink);border-bottom:1px solid #2a2a27}
+.bar-in{display:flex;align-items:center;gap:20px;height:56px}
+.mark{display:flex;align-items:baseline;gap:10px;text-decoration:none;white-space:nowrap}
+.mark b{font-family:var(--display);font-size:24px;font-weight:400;color:var(--gold);letter-spacing:.04em}
+.mark span{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--on-ink-muted)}
+.nav{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none;margin-left:auto;scroll-behavior:smooth}
+@media (max-width:860px){.nav{-webkit-mask-image:linear-gradient(90deg,transparent,#000 16px,#000 calc(100% - 40px),transparent);mask-image:linear-gradient(90deg,transparent,#000 16px,#000 calc(100% - 40px),transparent);padding:0 14px}}
+.nav::-webkit-scrollbar{display:none}
+.nav a{font-size:13px;font-weight:500;text-decoration:none;color:var(--on-ink-muted);padding:8px 11px;border-radius:999px;white-space:nowrap}
+.nav a:hover{color:var(--on-ink)}
+.nav a.on{color:var(--ink);background:var(--gold)}
+.progress{position:absolute;left:0;bottom:-1px;height:2px;background:var(--gold);width:0}
+@media (max-width:860px){.mark span{display:none}}
+
+/* ---------- hero ---------- */
+.hero{background:var(--ink);color:var(--on-ink);position:relative;overflow:hidden}
+.hero-in{display:grid;grid-template-columns:1.1fr .9fr;gap:48px;padding:72px 0 56px;align-items:end}
+.hero h1{font-family:var(--display);font-size:clamp(40px,6.2vw,84px);line-height:1.02;letter-spacing:-.01em}
+.hero h1 em{font-style:normal;color:var(--gold)}
+.hero .lede{margin-top:22px;max-width:52ch;color:#cfcfc9;font-size:18px;font-weight:300}
+.years{position:relative;font-family:var(--display);line-height:.82;text-align:right}
+.years .y{display:block;font-size:clamp(84px,14vw,190px);color:transparent;-webkit-text-stroke:1.5px #4a4a45}
+.years .y.gold{color:var(--gold);-webkit-text-stroke:0}
+.years small{display:block;font-family:var(--body);font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--on-ink-muted);margin:10px 0 18px}
+.blade{position:absolute;left:0;right:0;top:-1px;height:2px;pointer-events:none}
+.blade svg{width:100%;height:24px;display:block;transform:translateY(-50%)}
+.glint{animation:glint 4.5s ease-in-out 600ms 1 both}
+@keyframes glint{from{transform:translateX(-30%)}to{transform:translateX(130%)}}
+.stats{position:relative;display:grid;grid-template-columns:repeat(5,1fr);border-top:1px solid #2e2e2a}
+.stat{padding:22px 18px 26px;border-right:1px solid #2e2e2a}
+.stat:last-child{border-right:0}
+.stat b{display:block;font-family:var(--display);font-size:46px;line-height:1;color:var(--gold);font-weight:400}
+.stat span{display:block;margin-top:8px;font-size:13px;color:var(--on-ink-muted);line-height:1.4}
+@media (max-width:900px){.hero-in{grid-template-columns:1fr;gap:24px;padding-top:48px}.years{text-align:left}.stats{grid-template-columns:repeat(2,1fr)}.stat:nth-child(2n){border-right:0}.stat{border-bottom:1px solid #2e2e2a}}
+
+/* ---------- sections ---------- */
+section{padding:88px 0;scroll-margin-top:56px}
+section.alt{background:var(--paper-2)}
+section.dark{background:var(--ink);color:var(--on-ink)}
+.sec-head{display:grid;grid-template-columns:180px 1fr;gap:32px;margin-bottom:44px;align-items:start}
+.sec-head .idx{font-family:var(--display);font-size:64px;line-height:.9;color:var(--gold-text)}
+.dark .sec-head .idx{color:var(--gold)}
+.sec-head h2{font-family:var(--display);font-size:clamp(32px,4vw,52px);line-height:1.08}
+.sec-head p{margin-top:14px;max-width:var(--measure);color:var(--muted)}
+.dark .sec-head p{color:var(--on-ink-muted)}
+@media (max-width:760px){.sec-head{grid-template-columns:1fr;gap:6px}.sec-head .idx{font-size:40px}section{padding:64px 0}}
+
+/* badges */
+.badge{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:3px 8px;border-radius:999px;border:1px solid currentColor;line-height:1.3;white-space:nowrap;vertical-align:middle}
+.b-E{color:var(--ok)}
+.b-MP{color:var(--warn)}
+.b-A{color:var(--risk)}
+.b-I{color:var(--steel);border-style:dashed}
+.b-aek{color:var(--ink);background:var(--gold);border-color:var(--gold)}
+.dark .b-E{color:#7fc79c}.dark .b-MP{color:#e3a54a}.dark .b-A{color:#e88a7a}.dark .b-I{color:#b4b7bc}
+
+/* legend */
+.legend{display:flex;flex-wrap:wrap;gap:10px 22px;padding:16px 18px;border:1px solid var(--rule);border-radius:var(--r);background:#fff;font-size:14px;color:var(--muted)}
+.legend div{display:flex;gap:8px;align-items:center}
+
+/* overview */
+.overview{display:grid;grid-template-columns:1.25fr 1fr;gap:48px;align-items:start}
+.summary p{max-width:var(--measure);font-size:19px;line-height:1.65}
+.summary p+p{margin-top:16px}
+.summary p:first-child::first-letter{font-family:var(--display);float:left;font-size:72px;line-height:.8;padding:8px 10px 0 0;color:var(--gold-text)}
+.takeaways{display:grid;gap:0;border-top:2px solid var(--ink)}
+.take{padding:18px 0;border-bottom:1px solid var(--rule);display:grid;grid-template-columns:44px 1fr;gap:12px}
+.take i{font-style:normal;font-family:var(--display);font-size:28px;color:var(--gold-text);line-height:1}
+.take h3{font-family:var(--body);font-weight:600;font-size:16px;margin-bottom:4px}
+.take p{font-size:15px;color:var(--muted)}
+@media (max-width:900px){.overview{grid-template-columns:1fr}}
+
+
+
+/* what is fencing + teaching */
+.what{display:grid;grid-template-columns:1.3fr .7fr;gap:48px;align-items:center}
+.what-text{display:grid;gap:14px}
+.what-text h3{font-family:var(--display);font-size:clamp(28px,3.4vw,40px);line-height:1.1}
+.what-text p{max-width:var(--measure);font-size:18px}
+.lights{background:var(--ink);color:var(--on-ink-muted);border-radius:var(--r);padding:26px 22px;display:grid;gap:16px}
+.lights .box{display:flex;align-items:center;justify-content:center;gap:10px}
+.lights .l{width:30px;height:30px;border-radius:50%;display:block}
+.lights .red{background:#d6402f;box-shadow:0 0 18px rgba(214,64,47,.7)}
+.lights .grn{background:#2fae5a;box-shadow:0 0 18px rgba(47,174,90,.7)}
+.lights .wht{background:#3a3a36}
+.lights .sc{font-family:var(--display);font-size:48px;color:var(--gold);line-height:1}
+.lights .sep{font-family:var(--display);font-size:40px;color:var(--on-ink-muted)}
+.lights p{font-size:13px;text-align:center;line-height:1.45}
+.teach{margin-top:72px}
+.teach-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.tcard{background:#fff;border:1px solid var(--rule);border-top:3px solid var(--gold);border-radius:var(--r);padding:20px}
+.tcard .tn{font-family:var(--display);font-size:28px;color:var(--gold-text);line-height:1}
+.tcard h4{font-family:var(--display);font-size:24px;line-height:1.15;margin:10px 0 8px}
+.tcard p{font-size:15px;color:var(--muted)}
+.teach-info{margin:14px 0 0;display:grid;grid-template-columns:repeat(4,1fr);background:var(--ink);color:var(--on-ink);border-radius:var(--r)}
+.teach-info div{padding:18px 20px;border-right:1px solid #2e2e2a;min-width:0}
+.teach-info div:last-child{border-right:0}
+.teach-info dt{font-size:11px;letter-spacing:.14em;text-transform:uppercase;font-weight:600;color:var(--gold)}
+.teach-info dd{margin:6px 0 0;font-size:15px;color:#d6d6d0;line-height:1.45}
+.today-solo{grid-template-columns:1fr;max-width:820px}
+@media (max-width:1000px){.what{grid-template-columns:1fr;gap:24px}.teach-grid,.teach-info{grid-template-columns:repeat(2,1fr)}.teach-info div:nth-child(2){border-right:0}}
+@media (max-width:560px){.teach-grid,.teach-info{grid-template-columns:1fr}.teach-info div{border-right:0;border-bottom:1px solid #2e2e2a}}
+
+/* olympic weapons */
+.olympic{margin-top:72px}
+.ol-head{display:grid;gap:10px;max-width:var(--measure);margin-bottom:28px}
+.ol-head h3{font-family:var(--display);font-size:clamp(28px,3.4vw,40px);line-height:1.1}
+.ol-head p:last-child{color:var(--muted)}
+.ol-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.ol-card{background:#fff;border:1px solid var(--rule);border-radius:var(--r);padding:20px 20px 22px;display:grid;gap:10px;align-content:start}
+.ol-card .duel{width:100%;max-width:340px;height:auto;display:block;margin:0 auto}
+.ol-card .wpn{width:100%;max-width:340px;height:auto;display:block;margin:0 auto;padding-top:10px;border-top:1px dashed var(--rule)}
+.ol-card.ol-aek{border-top:3px solid var(--gold)}
+.fig{width:84px;height:auto;display:block}
+.ol-card h4{font-family:var(--display);font-size:24px;line-height:1.15;margin-top:4px}
+.ol-card h4 span{display:block;font-family:var(--body);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--gold-text);font-weight:600;margin-top:4px}
+.ol-card dl{margin:0;display:grid;gap:8px}
+.ol-card dt{font-size:11px;letter-spacing:.12em;text-transform:uppercase;font-weight:600;color:var(--muted)}
+.ol-card dd{margin:0 0 4px;font-size:15px;line-height:1.45}
+.ol-how{margin-top:14px;display:grid;grid-template-columns:repeat(4,1fr);gap:0;background:var(--ink);color:var(--on-ink);border-radius:var(--r)}
+.ol-how div{padding:20px;border-right:1px solid #2e2e2a}
+.ol-how div:last-child{border-right:0}
+.ol-how b{display:block;font-family:var(--display);font-weight:400;font-size:40px;line-height:1;color:var(--gold)}
+.ol-how span{display:block;margin-top:8px;font-size:14px;color:#cfcfc9;line-height:1.45}
+.ol-src{margin-top:14px;font-size:13px;color:var(--muted);max-width:none}
+@media (max-width:1000px){.ol-grid{grid-template-columns:1fr}.ol-how{grid-template-columns:repeat(2,1fr)}.ol-how div:nth-child(2){border-right:0}}
+@media (max-width:520px){.ol-how{grid-template-columns:1fr}.ol-how div{border-right:0;border-bottom:1px solid #2e2e2a}}
+
+/* background: accordions */
+.acc{border-top:2px solid var(--ink)}
+.acc details{border-bottom:1px solid var(--rule)}
+.acc summary{list-style:none;cursor:pointer;display:grid;grid-template-columns:120px 1fr auto;gap:20px;align-items:center;padding:22px 4px}
+.acc summary::-webkit-details-marker{display:none}
+.acc summary .yr{font-family:var(--display);font-size:40px;line-height:1;color:var(--gold-text)}
+.acc summary .yr{white-space:nowrap}
+.acc summary .yr.rng{font-size:29px;letter-spacing:-.01em}
+.acc summary h3{font-family:var(--display);font-size:26px;line-height:1.15}
+.acc summary .sub{display:block;font-family:var(--body);font-size:14px;color:var(--muted);margin-top:4px}
+.acc summary .pm{position:relative;width:34px;height:34px;flex:0 0 34px;border:1px solid var(--rule);border-radius:50%;transition:transform .2s,background-color .2s;font-size:0}
+.acc summary .pm::before,.acc summary .pm::after{content:"";position:absolute;left:50%;top:50%;width:12px;height:1.5px;background:var(--text);transform:translate(-50%,-50%)}
+.acc summary .pm::after{transform:translate(-50%,-50%) rotate(90deg)}
+.acc summary .pm{transition:transform .35s cubic-bezier(.2,.7,.2,1),background-color .25s,border-color .25s}
+.acc summary:hover h3{color:var(--gold-text)}
+.acc summary h3{transition:color .2s}
+.acc details[open] summary .pm{transform:rotate(45deg);background:var(--gold);border-color:var(--gold)}
+.acc details.closing summary .pm{transform:none;background:transparent;border-color:var(--rule)}
+.acc .body{overflow:hidden;padding:0 4px 28px 144px;display:grid;gap:14px;max-width:calc(var(--measure) + 144px)}
+.acc .body p{max-width:var(--measure)}
+.acc .body ul{margin:0;padding-left:18px;max-width:var(--measure)}
+.acc .body li+li{margin-top:6px}
+.callout{border-left:3px solid var(--gold);padding:10px 16px;background:#fff;font-size:15px;color:var(--muted);max-width:var(--measure)}
+.callout b{color:var(--text)}
+@media (max-width:760px){.acc summary{grid-template-columns:78px 1fr auto;gap:12px}.acc summary .yr{font-size:28px}.acc summary .yr.rng{font-size:20px}.acc summary h3{font-size:20px}.acc .body{padding-left:4px}}
+
+.medals{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--rule);border:1px solid var(--rule);margin-top:6px;max-width:760px}
+.medal{background:#fff;padding:14px 16px}
+.medal .m{font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase}
+.medal .m.g{color:#8a6d00}.medal .m.s{color:#6f747b}.medal .m.br{color:#8b5a2b}
+.medal b{display:block;font-family:var(--display);font-size:22px;font-weight:400;margin:4px 0 2px}
+.medal span{font-size:14px;color:var(--muted)}
+@media (max-width:640px){.medals{grid-template-columns:1fr}}
+
+/* ---------- piste timeline ---------- */
+.filters{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:22px}
+.chip{font:500 13px var(--body);color:var(--on-ink-muted);background:transparent;border:1px solid #3a3a36;border-radius:999px;padding:7px 14px;cursor:pointer}
+.chip:hover{color:var(--on-ink);border-color:#5a5a54}
+.chip[aria-pressed="true"]{background:var(--gold);color:var(--ink);border-color:var(--gold)}
+.piste-wrap{position:relative;overflow-x:auto;scroll-snap-type:x proximity;padding-bottom:10px;scrollbar-color:#4a4a45 transparent;-webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 56px),transparent);mask-image:linear-gradient(90deg,#000 calc(100% - 56px),transparent)}
+.piste-wrap.end{-webkit-mask-image:none;mask-image:none}
+.piste{position:relative;display:flex;align-items:flex-start;gap:0;min-width:max-content;padding:0 8px}
+.piste::before{content:"";position:absolute;left:0;right:0;top:66px;height:30px;background:linear-gradient(#262623,#262623) padding-box;border-top:1px solid #45453f;border-bottom:1px solid #45453f}
+.piste::after{content:"";position:absolute;left:0;right:0;top:80px;height:1px;background:repeating-linear-gradient(90deg,#55554e 0 10px,transparent 10px 18px)}
+.stop{position:relative;width:132px;flex:0 0 auto;scroll-snap-align:start;background:none;border:0;padding:0 6px;text-align:left;color:var(--on-ink);cursor:pointer;font-family:var(--body)}
+.stop .sy{display:block;font-family:var(--display);font-size:30px;line-height:1;color:var(--on-ink);height:40px}
+.stop .sd{display:block;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--on-ink-muted);height:20px}
+.stop .pin{position:relative;z-index:1;display:block;width:16px;height:16px;margin:15px 0 14px 2px;border-radius:50%;background:var(--ink);border:2px solid var(--steel)}
+.stop[data-cat="aek"] .pin{border-color:var(--gold)}
+.stop .st{display:block;font-size:13px;line-height:1.35;color:var(--on-ink-muted);min-height:54px;padding-right:6px}
+.stop:hover .st{color:var(--on-ink)}
+.stop.on .pin{background:var(--gold);border-color:var(--gold);box-shadow:0 0 0 6px rgba(242,194,0,.18)}
+.stop.on .sy{color:var(--gold)}
+.stop.on .st{color:var(--on-ink)}
+.stop[hidden]{display:none}
+.detail{margin-top:26px;display:grid;grid-template-columns:240px 1fr;gap:36px;border-top:1px solid #34342f;padding-top:30px;min-height:260px}
+.detail .dy{font-family:var(--display);font-size:clamp(56px,7vw,96px);line-height:.9;color:var(--gold)}
+.detail .dd{margin-top:10px;font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:var(--on-ink-muted)}
+.detail h3{font-family:var(--display);font-size:clamp(26px,3vw,36px);line-height:1.15;max-width:28ch}
+.detail .badges{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 16px}
+.detail p{max-width:var(--measure);color:#d6d6d0}
+.detail .why{margin-top:16px;padding:12px 16px;border-left:3px solid var(--gold);background:#1c1c1a;max-width:var(--measure);color:#d6d6d0}
+.detail .why b{color:var(--gold);font-weight:600;font-size:12px;letter-spacing:.12em;text-transform:uppercase;display:block;margin-bottom:4px}
+.detail .src{margin-top:16px;font-size:13px;color:var(--on-ink-muted)}
+.detail .src a{color:var(--on-ink)}
+.tl-nav{display:flex;gap:8px;margin-top:22px}
+.tl-nav button{font:500 13px var(--body);background:transparent;color:var(--on-ink);border:1px solid #3a3a36;border-radius:999px;padding:8px 16px;cursor:pointer}
+.tl-nav button:hover{border-color:var(--gold)}
+@media (max-width:760px){.detail{grid-template-columns:1fr;gap:10px}}
+
+/* ---------- dynasty ---------- */
+.dyn{display:grid;grid-template-columns:repeat(10,1fr);gap:6px}
+.yrbtn{position:relative;aspect-ratio:3/4;border:1px solid var(--rule);background:#fff;border-radius:var(--r);cursor:pointer;display:flex;flex-direction:column;justify-content:space-between;padding:10px;font-family:var(--body);text-align:left;color:var(--text)}
+.yrbtn .n{font-family:var(--display);font-size:30px;line-height:1;color:var(--gold-text)}
+.yrbtn .y{font-size:13px;font-weight:600}
+.yrbtn .men{position:absolute;top:8px;right:8px;width:10px;height:10px;border-radius:50%;background:var(--ink)}
+.yrbtn:hover{border-color:var(--ink)}
+.yrbtn[aria-pressed="true"]{background:var(--ink);color:var(--on-ink);border-color:var(--ink)}
+.yrbtn[aria-pressed="true"] .n{color:var(--gold)}
+.yrbtn[aria-pressed="true"] .men{background:var(--gold)}
+.dyn-detail{margin-top:22px;display:grid;grid-template-columns:1fr 1fr;gap:28px;padding:22px;background:#fff;border:1px solid var(--rule);border-radius:var(--r)}
+.dyn-detail h3{font-family:var(--display);font-size:28px}
+.dyn-detail .lbl{font-size:12px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+.dyn-detail .names{font-size:17px}
+.dyn-detail .none{color:var(--muted);font-size:15px}
+.dyn-legend{display:flex;gap:18px;flex-wrap:wrap;margin-top:12px;font-size:13px;color:var(--muted)}
+.dyn-legend span{display:inline-flex;align-items:center;gap:6px}
+.dot{width:10px;height:10px;border-radius:50%;background:var(--ink);display:inline-block}
+@media (max-width:760px){.dyn{grid-template-columns:repeat(5,1fr)}.dyn-detail{grid-template-columns:1fr}}
+
+/* ---------- people ---------- */
+.people{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border-top:2px solid var(--ink)}
+.person{border-bottom:1px solid var(--rule);border-right:1px solid var(--rule);padding:22px 22px 20px}
+.person:nth-child(3n){border-right:0}
+.person .role{font-size:12px;letter-spacing:.12em;text-transform:uppercase;font-weight:600;color:var(--gold-text)}
+.person h3{font-family:var(--display);font-size:28px;line-height:1.1;margin:8px 0 10px}
+.person p{font-size:15px;color:var(--muted)}
+.person .era{font-size:13px;color:var(--text);font-weight:500;margin-bottom:8px}
+.person button{margin-top:12px;font:600 13px var(--body);background:none;border:0;padding:0;color:var(--text);cursor:pointer;text-decoration:underline;text-decoration-color:var(--gold);text-decoration-thickness:2px;text-underline-offset:3px}
+.person .more{margin-top:12px;font-size:14px;color:var(--text);display:grid;gap:8px}
+.person .more[hidden]{display:none}
+.person .more li{margin-left:-2px}
+.person ul{margin:0;padding-left:18px}
+.quote{font-family:var(--display);font-size:20px;line-height:1.3;color:var(--text);border-left:3px solid var(--gold);padding-left:12px}
+.group-title{grid-column:1/-1;padding:18px 0 10px;border-bottom:1px solid var(--rule);font-size:12px;letter-spacing:.16em;text-transform:uppercase;font-weight:600;color:var(--muted)}
+@media (max-width:1000px){.people{grid-template-columns:repeat(2,1fr)}.person:nth-child(3n){border-right:1px solid var(--rule)}}
+@media (max-width:640px){.people{grid-template-columns:1fr}.person{border-right:0!important}}
+
+/* ---------- today ---------- */
+.today{display:grid;grid-template-columns:1fr 1fr;gap:48px}
+.facts dl{margin:0;display:grid;grid-template-columns:150px 1fr;border-top:2px solid var(--ink)}
+.facts dt,.facts dd{margin:0;padding:12px 0;border-bottom:1px solid var(--rule);font-size:15px}
+.facts dt{font-weight:600;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding-top:14px}
+.facts dd .badge{margin-left:6px}
+.rank{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border-top:2px solid var(--ink)}
+.rank div{padding:18px 14px;border-right:1px solid var(--rule);border-bottom:1px solid var(--rule)}
+.rank div:last-child{border-right:0;background:var(--ink);color:var(--on-ink)}
+.rank b{display:block;font-family:var(--display);font-size:52px;font-weight:400;line-height:1}
+.rank div:last-child b{color:var(--gold)}
+.rank span{display:block;font-size:13px;margin-top:6px;color:var(--muted)}
+.rank div:last-child span{color:var(--on-ink-muted)}
+.rank-note{margin-top:12px;font-size:14px;color:var(--muted);max-width:var(--measure)}
+.weapons{margin-top:36px;display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.weapons>*{min-width:0}
+@media (max-width:560px){.weapons{grid-template-columns:1fr}}
+.weapon{border:1px solid var(--rule);background:#fff;border-radius:var(--r);padding:14px 16px}
+.weapon svg{display:block;width:100%;height:46px}
+.weapon b{display:block;font-family:var(--display);font-size:22px;font-weight:400;margin-top:8px}
+.weapon span{font-size:13px;color:var(--muted)}
+.today>*,.overview>*,.dyk>*{min-width:0}
+.facts dd{min-width:0;overflow-wrap:anywhere}
+@media (max-width:900px){.today{grid-template-columns:1fr}.facts dl{grid-template-columns:120px 1fr}}
+@media (max-width:560px){.facts dl{grid-template-columns:1fr}.facts dt{border-bottom:0;padding-bottom:0}.badge{white-space:normal}}
+
+/* ---------- did you know ---------- */
+.dyk{display:grid;grid-template-columns:1.1fr .9fr;gap:40px;align-items:stretch}
+.card-stage{position:relative;background:var(--ink);color:var(--on-ink);border-radius:var(--r);padding:36px 36px 28px;display:flex;flex-direction:column;justify-content:space-between;min-height:320px}
+.card-stage .k{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);font-weight:600}
+.card-stage .fact{font-family:var(--display);font-size:clamp(24px,2.6vw,34px);line-height:1.22;margin:18px 0;max-width:30ch}
+.card-stage .ctrl{display:flex;align-items:center;gap:12px}
+.card-stage .ctrl button{width:42px;height:42px;border-radius:50%;border:1px solid #45453f;background:transparent;color:var(--on-ink);font-size:18px;cursor:pointer}
+.card-stage .ctrl button:hover{border-color:var(--gold);color:var(--gold)}
+.card-stage .count{font-size:13px;color:var(--on-ink-muted);margin-left:auto}
+.dyk-list{margin:0;padding:0;list-style:none;border-top:2px solid var(--ink);max-height:360px;overflow:auto}
+.dyk-list button{width:100%;text-align:left;background:none;border:0;border-bottom:1px solid var(--rule);padding:10px 4px;font:400 14px var(--body);color:var(--muted);cursor:pointer;display:grid;grid-template-columns:28px 1fr;gap:8px}
+.dyk-list button b{font-family:var(--display);font-weight:400;color:var(--gold-text)}
+.dyk-list button[aria-current="true"]{color:var(--text);background:#fff}
+@media (max-width:900px){.dyk{grid-template-columns:1fr}}
+
+/* ---------- strategy ---------- */
+.obs{display:grid;grid-template-columns:repeat(2,1fr);gap:0;border-top:2px solid var(--on-ink)}
+.ob{padding:24px 24px 26px 0;border-bottom:1px solid #34342f}
+.ob:nth-child(odd){padding-right:32px;border-right:1px solid #34342f}
+.ob:nth-child(even){padding-left:32px}
+.ob h3{font-family:var(--display);font-size:24px;line-height:1.2;margin:10px 0 8px}
+.ob p{color:#cfcfc9;font-size:15px;max-width:var(--measure)}
+.ob .basis{margin-top:10px;font-size:13px;color:var(--on-ink-muted)}
+@media (max-width:760px){.obs{grid-template-columns:1fr}.ob,.ob:nth-child(odd),.ob:nth-child(even){padding:22px 0;border-right:0}}
+.guard{margin-top:48px;display:grid;grid-template-columns:1fr 1fr;gap:28px}
+.guard h3{font-family:var(--display);font-size:26px;margin-bottom:12px}
+.guard ul{margin:0;padding:0;list-style:none;border-top:1px solid #34342f}
+.guard li{padding:12px 0;border-bottom:1px solid #34342f;font-size:15px;color:#d6d6d0;display:grid;grid-template-columns:22px 1fr;gap:10px}
+.guard li::before{content:"";width:10px;height:10px;margin-top:8px;border:2px solid var(--gold);transform:rotate(45deg)}
+@media (max-width:760px){.guard{grid-template-columns:1fr}}
+
+.copy{font:600 12px var(--body);border:1px solid var(--rule);background:#fff;border-radius:999px;padding:7px 12px;cursor:pointer;white-space:nowrap}
+.copy:hover{border-color:var(--ink)}
+@media (max-width:700px){.tagline{grid-template-columns:1fr auto}.tagline .en{grid-column:1}}
+/* ---------- sources ---------- */
+.src-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:32px}
+.src-grid h3{font-family:var(--body);font-size:13px;letter-spacing:.12em;text-transform:uppercase;font-weight:600;margin-bottom:10px;padding-bottom:8px;border-bottom:2px solid var(--ink)}
+.src-grid ul{list-style:none;margin:0;padding:0;font-size:14px}
+.src-grid li{padding:6px 0;border-bottom:1px solid var(--rule)}
+.method{margin-top:40px;display:grid;grid-template-columns:1fr 1fr;gap:28px;font-size:15px;color:var(--muted)}
+.method p{max-width:var(--measure)}
+.method b{color:var(--text)}
+@media (max-width:900px){.src-grid,.method{grid-template-columns:1fr}}
+footer{background:var(--ink);color:var(--on-ink-muted);padding:36px 0;font-size:13px}
+footer .wrap{display:flex;flex-wrap:wrap;gap:12px 28px;justify-content:space-between}
+footer b{color:var(--gold);font-family:var(--display);font-weight:400;font-size:18px}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--gold);padding:10px 18px;border-radius:999px;font-size:13px;font-weight:600;z-index:90}
+.toast[hidden]{display:none}
+</style>
+</head>
+<body>
+
+<header class="bar">
+  <div class="wrap bar-in">
+    <a class="mark" href="#top"><b>ΑΕΚ</b><span>Ξιφασκία</span></a>
+    <nav class="nav" aria-label="Ενότητες">
+      <a href="#overview">Η ξιφασκία</a>
+      <a href="#background">Ιστορικό πλαίσιο</a>
+      <a href="#timeline">Χρονολόγιο</a>
+      <a href="#facts">Ήξερες ότι</a>
+      <a href="#sources">Πηγές</a>
+    </nav>
+  </div>
+  <div class="progress" id="progress"></div>
+</header>
+
+<main id="top">
+<!-- HERO -->
+<div class="hero on-ink">
+    <div class="wrap hero-in">
+    <div>
+      <h1>Από το Ζάππειο<br>στη <em>Νέα Φιλαδέλφεια</em></h1>
+      <p class="lede">Η ελληνική ξιφασκία έδωσε στη χώρα τον πρώτο Ολυμπιονίκη της σύγχρονης εποχής το 1896. Ακριβώς έναν αιώνα αργότερα, το 1996, η ΑΕΚ ίδρυσε το δικό της τμήμα και έγινε η κυρίαρχη δύναμη της ελληνικής σπάθης γυναικών. Αυτή είναι η ιστορία του και οι στιγμές που το καθόρισαν.</p>
+    </div>
+    <div class="years" aria-label="1896 και 1996">
+      <span class="y">1896</span>
+      <small>Αθήνα · Ζάππειο · 1ος Ολυμπιονίκης</small>
+      <span class="y gold">1996</span>
+      <small style="margin-bottom:0">Ίδρυση Τμήματος Ξιφασκίας ΑΕΚ</small>
+    </div>
+  </div>
+  <div class="wrap stats num">
+    <div class="blade" aria-hidden="true">
+    <svg viewBox="0 0 1200 24" preserveAspectRatio="none">
+      <defs><linearGradient id="g" x1="0" x2="1"><stop offset="0" stop-color="#f2c200" stop-opacity="0"/><stop offset=".5" stop-color="#f2c200" stop-opacity=".9"/><stop offset="1" stop-color="#f2c200" stop-opacity="0"/></linearGradient></defs>
+      <line x1="0" y1="12" x2="1200" y2="12" stroke="#2e2e2a" stroke-width="1"/>
+      <rect class="glint" x="0" y="11" width="240" height="2" fill="url(#g)"/>
+    </svg>
+  </div>
+    <div class="stat"><b>12</b><span>Πανελλήνια πρωταθλήματα σπάθης (10 γυναικών, 2 ανδρών)</span></div>
+    <div class="stat"><b>10</b><span>Συνεχόμενοι τίτλοι γυναικών, 2012–2021</span></div>
+    <div class="stat"><b>2019</b><span>Χάλκινο στο Παγκόσμιο της Βουδαπέστης, με αθλήτρια της ΑΕΚ</span></div>
+    <div class="stat"><b>2021</b><span>Η ΑΕΚ στους Ολυμπιακούς Αγώνες του Τόκιο</span></div>
+    <div class="stat"><b>3</b><span>Όπλα από το 2022: σπάθη, ξίφος ασκήσεως, ξίφος μονομαχίας</span></div>
+  </div>
+</div>
+
+<!-- OVERVIEW -->
+<section id="overview">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="idx num">01</div>
+      <div>
+        <h2>Τι είναι η ξιφασκία και τι μαθαίνει κανείς στην ΑΕΚ</h2>
+      </div>
+    </div>
+    <div class="what">
+      <div class="what-text">
+        <h3>Τι είναι η ξιφασκία</h3>
+        <p>Η ξιφασκία είναι άθλημα μάχης με ξίφος ανάμεσα σε δύο αθλητές, πάνω σε μια στενή πίστα. Στόχος είναι να αγγίξεις τον αντίπαλο με το όπλο σου στην επιτρεπόμενη περιοχή του σώματός του, πριν σε αγγίξει εκείνος.</p>
+        <p>Κάθε άγγιγμα καταγράφεται ηλεκτρονικά. Ένα κόκκινο ή πράσινο φως δείχνει έγκυρο χτύπημα, ανάλογα με την πλευρά του αθλητή, ενώ ένα λευκό φως δείχνει άγγιγμα εκτός στόχου. Οι αθλητές φορούν μάσκα και προστατευτική στολή, και στο ξίφος ασκήσεως και τη σπάθη ένα αγώγιμο γιλέκο που καλύπτει την περιοχή στόχου.</p>
+        <p>Είναι από τα λίγα αθλήματα που βρίσκονται στο ολυμπιακό πρόγραμμα από τους πρώτους σύγχρονους Αγώνες του 1896. Ο πρώτος Έλληνας Ολυμπιονίκης της σύγχρονης εποχής, ο Λέων Πύργος, ήταν ξιφομάχος.</p>
+      </div>
+      <div class="lights" aria-hidden="true">
+        <div class="box"><span class="l red"></span><span class="l wht"></span><span class="sc num">15</span><span class="sep">:</span><span class="sc num">12</span><span class="l wht"></span><span class="l grn"></span></div>
+        <p>Το σκορ και τα φώτα του ηλεκτρονικού συστήματος: κόκκινο και πράσινο για έγκυρο χτύπημα, λευκό για άγγιγμα εκτός στόχου.</p>
+      </div>
+    </div>
+    <div class="olympic" id="weapons">
+      <div class="ol-head">
+        <h3>Πώς παίζεται</h3>
+        <p>Η ολυμπιακή ξιφασκία έχει τρία όπλα: σπάθη, ξίφος ασκήσεως και ξίφος μονομαχίας. Στο πρόγραμμα των Αγώνων υπάρχουν 12 αγωνίσματα, ατομικά και ομαδικά, για άνδρες και γυναίκες σε κάθε όπλο. Κάθε όπλο έχει δικούς του κανόνες και δική του περιοχή στόχου, που φαίνεται με κίτρινο παρακάτω.</p>
+      </div>
+      <div class="ol-grid">
+        <article class="ol-card ol-aek">
+          <svg viewBox="0 0 300 150" class="duel" role="img" aria-label="Δύο ξιφομάχοι σε θέση φύλαξης· με κίτρινο η περιοχή στόχου"><line x1="14" y1="146" x2="286" y2="146" stroke="#d8d8d2" stroke-width="2"/><g id="fz-sab" transform="translate(-10 0)"><path d="M79 94 C70 102 61 108 58 115 C55 122 53 131 52 138 L46 138" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke="#b3b3ac" stroke-width="10"></path><path d="M83 68 C76 73 69 77 65 80 C69 85 74 89 78 92" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke="#d9a900" stroke-width="8"></path><path d="M87 94 C96 101 106 106 109 112 C112 120 113 130 114 138 L126 138" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke="#c9c9c3" stroke-width="10"></path><path d="M78 65 Q88 51 98 65 L93 91 Q84 103 75 91 Z" fill="#f2c200"></path><circle cx="91" cy="46" r="10.5" fill="#f2c200"></circle><path d="M93 35.7 A10.5 10.5 0 0 1 93 56.3 Q98.5 46 93 35.7 Z" fill="#1a1a1a" fill-opacity="0.5"></path><path d="M90 66 C96 72 101 77 105 79.5 C110 78 116 75 121 73" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke="#f2c200" stroke-width="8"></path><path d="M122 73 L172 62" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke="#ffffff" stroke-width="5"></path><path d="M122 73 L172 62" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke="#1a1a1a" stroke-width="2"></path><ellipse cx="122.5" cy="73" rx="3" ry="6" transform="rotate(-12 122.5 73)" fill="#8a8a85"></ellipse></g><use href="#fz-sab" transform="translate(300 0) scale(-1 1)"/></svg>
+          <svg viewBox="0 0 300 50" class="wpn" role="img" aria-label="Το όπλο από κοντά"><rect x="22" y="21" width="34" height="8" rx="3" fill="#1a1a1a"/><circle cx="19" cy="25" r="4" fill="#8a8a85"/><path d="M57 13 Q69 25 62 41 C55 51 27 50 17 30 L21 28.5 C30 44 52 45 57.5 37 Q63 25 54.5 15 Z" fill="#9a9a94"/><path d="M62 23 L282 24.4 L284 25 L282 25.6 L62 27 Z" fill="#6f6f6a"/></svg>
+          <div>
+            <h4>Σπάθη</h4>
+          </div>
+        </article>        <article class="ol-card">
+          <svg viewBox="0 0 300 150" class="duel" role="img" aria-label="Δύο ξιφομάχοι σε θέση φύλαξης· με κίτρινο η περιοχή στόχου"><line x1="14" y1="146" x2="286" y2="146" stroke="#d8d8d2" stroke-width="2"/><g id="fz-foil" transform="translate(-10 0)"><path d="M79 94 C70 102 61 108 58 115 C55 122 53 131 52 138 L46 138" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke="#b3b3ac" stroke-width="10"></path><path d="M84 66 C78 67 72 68 67 68 C65 62 63 55 62 50" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke="#b3b3ac" stroke-width="8"></path><path d="M87 94 C96 101 106 106 109 112 C112 120 113 130 114 138 L126 138" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke="#c9c9c3" stroke-width="10"></path><path d="M78 65 Q88 51 98 65 L93 91 Q84 103 75 91 Z" fill="#f2c200"></path><circle cx="91" cy="46" r="10.5" fill="#c9c9c3"></circle><path d="M93 35.7 A10.5 10.5 0 0 1 93 56.3 Q98.5 46 93 35.7 Z" fill="#1a1a1a" fill-opacity="0.5"></path><path d="M90 66 C96 72 101 77 105 79.5 C110 78 116 75 121 73" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke="#c9c9c3" stroke-width="8"></path><path d="M122 73 L172 62" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke="#ffffff" stroke-width="5"></path><path d="M122 73 L172 62" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke="#1a1a1a" stroke-width="2"></path><ellipse cx="122.5" cy="73" rx="3" ry="6" transform="rotate(-12 122.5 73)" fill="#8a8a85"></ellipse></g><use href="#fz-foil" transform="translate(300 0) scale(-1 1)"/></svg>
+          <svg viewBox="0 0 300 50" class="wpn" role="img" aria-label="Το όπλο από κοντά"><rect x="22" y="21" width="34" height="8" rx="3" fill="#1a1a1a"/><circle cx="19" cy="25" r="4" fill="#8a8a85"/><ellipse cx="60" cy="25" rx="3.5" ry="12" fill="#a9a9a3"/><path d="M62 23.6 L280 24.6 L280 25.4 L62 26.4 Z" fill="#6f6f6a"/><circle cx="282" cy="25" r="2.4" fill="#1a1a1a"/></svg>
+          <div>
+            <h4>Ξίφος ασκήσεως</h4>
+          </div>
+        </article>
+        <article class="ol-card">
+          <svg viewBox="0 0 300 150" class="duel" role="img" aria-label="Δύο ξιφομάχοι σε θέση φύλαξης· με κίτρινο η περιοχή στόχου"><line x1="14" y1="146" x2="286" y2="146" stroke="#d8d8d2" stroke-width="2"/><g id="fz-epee" transform="translate(-10 0)"><path d="M79 94 C70 102 61 108 58 115 C55 122 53 131 52 138 L46 138" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke="#d9a900" stroke-width="10"></path><path d="M84 66 C78 67 72 68 67 68 C65 62 63 55 62 50" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke="#d9a900" stroke-width="8"></path><path d="M87 94 C96 101 106 106 109 112 C112 120 113 130 114 138 L126 138" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke="#f2c200" stroke-width="10"></path><path d="M78 65 Q88 51 98 65 L93 91 Q84 103 75 91 Z" fill="#f2c200"></path><circle cx="91" cy="46" r="10.5" fill="#f2c200"></circle><path d="M93 35.7 A10.5 10.5 0 0 1 93 56.3 Q98.5 46 93 35.7 Z" fill="#1a1a1a" fill-opacity="0.5"></path><path d="M90 66 C96 72 101 77 105 79.5 C110 78 116 75 121 73" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke="#f2c200" stroke-width="8"></path><path d="M122 73 L172 62" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke="#ffffff" stroke-width="5"></path><path d="M122 73 L172 62" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke="#1a1a1a" stroke-width="2"></path><ellipse cx="122.5" cy="73" rx="3" ry="6" transform="rotate(-12 122.5 73)" fill="#8a8a85"></ellipse></g><use href="#fz-epee" transform="translate(300 0) scale(-1 1)"/></svg>
+          <svg viewBox="0 0 300 50" class="wpn" role="img" aria-label="Το όπλο από κοντά"><rect x="22" y="21" width="34" height="8" rx="3" fill="#1a1a1a"/><circle cx="19" cy="25" r="4" fill="#8a8a85"/><ellipse cx="60" cy="25" rx="5.5" ry="19" fill="#a9a9a3"/><path d="M64 22 L280 24.3 L280 25.7 L64 28 Z" fill="#6f6f6a"/><rect x="279" y="22.6" width="6" height="4.8" rx="1.5" fill="#1a1a1a"/></svg>
+          <div>
+            <h4>Ξίφος μονομαχίας</h4>
+          </div>
+        </article>
+      </div>
+      <div class="ol-how">
+        <div><b class="num">5</b><span>Στους ομίλους κερδίζει όποιος φτάσει πρώτος τα 5 χτυπήματα ή έχει τα περισσότερα στα 3 λεπτά.</span></div>
+        <div><b class="num">15</b><span>Στους αγώνες αποκλεισμού κερδίζει όποιος φτάσει πρώτος τα 15, σε τρεις περιόδους των 3 λεπτών με διάλειμμα ενός λεπτού. Στη σπάθη το διάλειμμα γίνεται όταν κάποιος φτάσει τα 8.</span></div>
+        <div><b class="num">12</b><span>Ολυμπιακά αγωνίσματα: ατομικό και ομαδικό, για άνδρες και γυναίκες, σε κάθε όπλο.</span></div>
+        <div><b class="num">1896</b><span>Η ξιφασκία είναι στο ολυμπιακό πρόγραμμα από τους πρώτους σύγχρονους Αγώνες. Τα χτυπήματα καταγράφονται ηλεκτρονικά, με κόκκινο ή πράσινο φως.</span></div>
+      </div>
+      <p class="ol-src">Πρόσθετη έρευνα, εκτός του εγγράφου. Πηγές: <a href="https://olympics.com/en/sports/fencing" target="_blank" rel="noopener">Olympics.com – What is Fencing?</a> · <a href="https://olympics.com/en/paris-2024/sports/fencing" target="_blank" rel="noopener">Olympics.com – Paris 2024 Fencing</a> · <a href="https://olympics.com/en/news/everything-you-need-to-know-about-fencing-the-equipment-the-weapons-the-athletes" target="_blank" rel="noopener">Olympics.com – Equipment and weapons</a> · <a href="https://www.nbcolympics.com/news/fencing-101-scoring" target="_blank" rel="noopener">NBC Olympics – Fencing 101</a> · <a href="https://9news.com/article/sports/olympics/rules-of-the-game/rules-olympic-games-fencing/507-1b906705-8538-4efe-adcd-99a7214c1fd4" target="_blank" rel="noopener">9News – Fencing rules</a> · <a href="https://britannica.com/sports/fencing/Organized-sport" target="_blank" rel="noopener">Britannica – Organized sport</a> · <a href="https://www.britannica.com:443/sports/fencing/Fencing-area" target="_blank" rel="noopener">Britannica – Fencing</a> · <a href="https://www.edb.gov.hk/attachment/en/curriculum-development/kla/pe/references_resource/national_games/Fencing_Eng.pdf" target="_blank" rel="noopener">EDB Hong Kong – Fencing guide</a></p>
+    </div>
+    <div class="teach" id="aek-teaching">
+      <div class="ol-head">
+        <h3>Τι διδάσκεται στην ΑΕΚ</h3>
+        <p>Η ΑΕΚ διδάσκει ξιφασκία στη Νέα Φιλαδέλφεια, από το πρώτο μάθημα ενός παιδιού ως το επίπεδο της Εθνικής ομάδας.</p>
+      </div>
+      <div class="teach-grid">
+        <article class="tcard"><span class="tn num">01</span><h4>Τρία όπλα</h4><p>Η σπάθη, το ιστορικό όπλο του τμήματος από το 1996. Από το 2022 διδάσκονται επίσης το ξίφος ασκήσεως και το ξίφος μονομαχίας.</p></article>
+        <article class="tcard"><span class="tn num">02</span><h4>Ακαδημία</h4><p>Κορίτσια και αγόρια από 6 ετών, σε όλα τα όπλα. Από την ακαδημία ξεκίνησαν οι περισσότεροι πρωταθλητές του τμήματος.</p></article>
+        <article class="tcard"><span class="tn num">03</span><h4>Αγωνιστικά τμήματα</h4><p>Ομάδες σε όλες τις κατηγορίες της Ομοσπονδίας: Κ10, Κ13, Κ17, Κ20 και Άνδρες–Γυναίκες. Οι αθλητές αγωνίζονται σε πανελλήνια πρωταθλήματα και κύπελλα σε όλη την Ελλάδα.</p></article>
+        <article class="tcard"><span class="tn num">04</span><h4>Ενήλικες και βετεράνοι</h4><p>Τμήμα ενηλίκων από το 2018 και αθλητές βετεράνων 40+. Το 2026 ο Αγαπητός Παπαδημητρίου της ΑΕΚ στέφθηκε πρωταθλητής Ελλάδας βετεράνων στο ξίφος μονομαχίας.</p></article>
+      </div>
+      <dl class="teach-info">
+        <div><dt>Πού</dt><dd>1ο Γυμνάσιο Νέας Φιλαδέλφειας, Τρυπιά 47</dd></div>
+        <div><dt>Πότε</dt><dd>Δευτέρα, Τετάρτη, Παρασκευή, και το Σάββατο για το αγωνιστικό τμήμα</dd></div>
+        <div><dt>Προπονητές</dt><dd>Βαγγέλης Σαρρής, Δημήτριος Παναγόπουλος, Αγαπητός Παπαδημητρίου (ξίφος μονομαχίας)</dd></div>
+        <div><dt>Εγγραφές</dt><dd>Γραφεία ΑΕΚ, Φωκών 9 · 210 2584582 · 10:00–19:00</dd></div>
+      </dl>
+      <p class="ol-src">Πηγές: <a href="https://www.aek.gr/xifaskia/" target="_blank" rel="noopener">aek.gr – Ξιφασκία</a> · <a href="https://www.aek.gr/proponiseis-xifaskias/" target="_blank" rel="noopener">aek.gr – Προπονήσεις ξιφασκίας</a> · <a href="https://www.aek.gr/stin-16i-thesi-i-xifaskia/" target="_blank" rel="noopener">aek.gr – Τα 3 όπλα (2022)</a> · <a href="https://www.aek.gr/archi-gia-to-neo-tmima-xifaskias-enilikon/" target="_blank" rel="noopener">aek.gr – Τμήμα ενηλίκων</a> · <a href="https://www.aek.gr/protathlitis-elladas-o-papadimitrioy/" target="_blank" rel="noopener">aek.gr – Παπαδημητρίου</a> · <a href="https://www.aek1924.gr/2024/09/07/xifaskia-i-aek-anakoinose-tin-enarxi-eggrafon-kai-proponiseon-tis-akadimias/" target="_blank" rel="noopener">AEK1924 – Ακαδημία</a></p>
+    </div>
+  </div>
+</section>
+
+<!-- BACKGROUND -->
+<section id="background" class="alt">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="idx num">02</div>
+      <div>
+        <h2>Η ελληνική ξιφασκία σε πέντε σταθμούς</h2>
+        <p>Πατήστε σε κάθε σταθμό για λεπτομέρειες. Το γενικό πλαίσιο μένει σκόπιμα σύντομο, γιατί το κύριο θέμα είναι η ΑΕΚ.</p>
+      </div>
+    </div>
+    <div class="acc">
+      <details>
+        <summary><span class="yr">5ος αι.</span><h3>Πολιτιστική κληρονομιά<span class="sub">Εκγύμναση με όπλα στην αρχαία Ελλάδα</span></h3><span class="pm" aria-hidden="true"></span></summary>
+        <div class="body">
+          <p>Η ιστορική σελίδα της FIE αναφέρει ότι τον 5ο αιώνα π.Χ. οι δάσκαλοι Ευθύδημος και Διονυσόδωρος δίδασκαν «οπλομαχία» έναντι αμοιβής.</p>
+          <p>Η αρχαία παράδοση λειτουργεί ως έμπνευση για τη σύγχρονη ξιφασκία, που διαμορφώθηκε στις ευρωπαϊκές σχολές από τον 16ο αιώνα.</p>
+        </div>
+      </details>
+      <details open>
+        <summary><span class="yr num">1896</span><h3>Αθήνα: ο πρώτος Έλληνας Ολυμπιονίκης<span class="sub">Ζάππειο · 7 και 9 Απριλίου · 3 αγωνίσματα, 15 ξιφομάχοι από 4 χώρες</span></h3><span class="pm" aria-hidden="true"></span></summary>
+        <div class="body">
+          <p>Στις 7 Απριλίου ο Λέων Πύργος νίκησε 3–1 τον Γάλλο Joanni Perronet στο ξίφος ασκήσεως διδασκάλων. Έγινε έτσι ο πρώτος Έλληνας Ολυμπιονίκης της σύγχρονης εποχής.</p>
+          <p>Στις 9 Απριλίου, στη σπάθη, ο Ιωάννης Γεωργιάδης κέρδισε το χρυσό χωρίς καμία ήττα και ο Τηλέμαχος Καράκαλος το αργυρό. Με το χάλκινο του Περικλή Πιερράκου-Μαυρομιχάλη στο ξίφος ασκήσεως, η Ελλάδα ήρθε πρώτη στον πίνακα μεταλλίων της ξιφασκίας με 2–1–1.</p>
+          <div class="medals">
+            <div class="medal"><span class="m g">Χρυσό · 7/4</span><b>Λέων Πύργος</b><span>Ξίφος ασκήσεως διδασκάλων</span></div>
+            <div class="medal"><span class="m g">Χρυσό · 9/4</span><b>Ιωάννης Γεωργιάδης</b><span>Σπάθη, αήττητος</span></div>
+            <div class="medal"><span class="m s">Αργυρό · 9/4</span><b>Τηλέμαχος Καράκαλος</b><span>Σπάθη</span></div>
+          </div>
+        </div>
+      </details>
+      <details>
+        <summary><span class="yr num">1906</span><h3>Μεσολυμπιακοί Αγώνες<span class="sub">Αθήνα · 8 αγωνίσματα ξιφασκίας · 23 Απριλίου – 1 Μαΐου</span></h3><span class="pm" aria-hidden="true"></span></summary>
+        <div class="body">
+          <p>Στις 28 Απριλίου ο Γεωργιάδης κέρδισε ξανά τη σπάθη. Η Ελλάδα πήρε αργυρό στο ομαδικό σπάθης με τους Γεωργιάδη, Σακοράφο, Ζορμπά και Κορδογιάννη, ενώ ο Ιωάννης Ραΐσης πήρε αργυρό στη σπάθη διδασκάλων.</p>
+        </div>
+      </details>
+      <details>
+        <summary><span class="yr num">2004</span><h3>Αθήνα, ξανά διοργανώτρια<span class="sub">Αίθουσα Ξιφασκίας Ελληνικού · 14–22 Αυγούστου · 223 ξιφομάχοι από 42 χώρες</span></h3><span class="pm" aria-hidden="true"></span></summary>
+        <div class="body">
+          <p>Η Ιωάννα Χρήστου τερμάτισε 8η στο ξίφος μονομαχίας, και η ομάδα ξίφους μονομαχίας γυναικών έφτασε στους «8».</p>
+          <p>Η Ελλάδα κατέβασε 9 αθλητές και η ομάδα σπάθης ανδρών τερμάτισε 8η.</p>
+        </div>
+      </details>
+      <details>
+        <summary><span class="yr num rng">2019–23</span><h3>Η ελληνική σπάθη στο παγκόσμιο βάθρο<span class="sub">4 μετάλλια σε Παγκόσμια Πρωταθλήματα ενηλίκων, όλα στη σπάθη γυναικών</span></h3><span class="pm" aria-hidden="true"></span></summary>
+        <div class="body">
+          <div class="medals">
+            <div class="medal"><span class="m br">Χάλκινο · 2019</span><b>Αθλήτρια της ΑΕΚ</b><span>Βουδαπέστη · Δώρα Γκουντούρα · το πρώτο ελληνικό μετάλλιο</span></div>
+            <div class="medal"><span class="m br">Χάλκινο · 2022</span><b>Δέσποινα Γεωργιάδου</b><span>Κάιρο</span></div>
+            <div class="medal"><span class="m s">Αργυρό + χάλκινο · 2023</span><b>Ελληνίδες σπαθίστριες</b><span>Μιλάνο</span></div>
+          </div>
+        </div>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- TIMELINE -->
+<section id="timeline" class="dark on-ink">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="idx num">03</div>
+      <div>
+        <h2>Περπατήστε την πίστα, από σήμερα ως το 1896</h2>
+        <p>Ο πιο πρόσφατος σταθμός είναι πρώτος. Επιλέξτε έναν σταθμό για να δείτε τι συνέβη και από πού προέρχεται.</p>
+      </div>
+    </div>
+    <div class="filters" role="group" aria-label="Φίλτρο κατηγορίας">
+      <button class="chip" data-f="all" aria-pressed="true">Όλα</button>
+      <button class="chip" data-f="olympic" aria-pressed="false">Ολυμπιακή ιστορία</button>
+      <button class="chip" data-f="aek" aria-pressed="false">ΑΕΚ: τίτλοι και ορόσημα</button>
+      <button class="chip" data-f="intl" aria-pressed="false">Διεθνή, με αθλητές ΑΕΚ</button>
+      <button class="chip" data-f="club" aria-pressed="false">Σύλλογος και ακαδημία</button>
+    </div>
+    <div class="piste-wrap" id="pisteWrap">
+      <div class="piste" id="piste" role="list"></div>
+    </div>
+    <div class="detail" id="detail" aria-live="polite"></div>
+    <div class="tl-nav">
+      <button id="prev">← Προηγούμενο</button>
+      <button id="next">Επόμενο →</button>
+    </div>
+  </div>
+</section>
+
+
+
+
+<!-- DID YOU KNOW -->
+<section id="facts" class="alt">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="idx num">04</div>
+      <div>
+        <h2>13 στοιχεία για την ιστορία της ξιφασκίας</h2>
+        <p>Περιηγηθείτε με τα βέλη ή τη λίστα. Το κουμπί αντιγραφής δίνει το κείμενο έτοιμο για ανάρτηση.</p>
+      </div>
+    </div>
+    <div class="dyk">
+      <div class="card-stage">
+        <div class="k">Ήξερες ότι…</div>
+        <p class="fact" id="factText"></p>
+        <div class="ctrl">
+          <button id="fPrev" aria-label="Προηγούμενο στοιχείο">←</button>
+          <button id="fNext" aria-label="Επόμενο στοιχείο">→</button>
+          <button id="fCopy" aria-label="Αντιγραφή στοιχείου" style="width:auto;border-radius:999px;padding:0 16px;font:600 13px var(--body)">Αντιγραφή</button>
+          <span class="count num" id="fCount"></span>
+        </div>
+      </div>
+      <ol class="dyk-list" id="factList"></ol>
+    </div>
+  </div>
+</section>
+
+<!-- SOURCES -->
+<section id="sources">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="idx num">05</div>
+      <div>
+        <h2>Από πού προέρχεται κάθε στοιχείο</h2>
+        <p>Πηγή αλήθειας είναι το έγγραφο «<a href="https://claude.ai/artifact/GQCHC5qC7fXiKwAiuSqAR5">Η Ιστορία της Ξιφασκίας της ΑΕΚ — Έρευνα &amp; Εργαλειοθήκη Marketing</a>» (16/11/2026). Το site δεν προσθέτει νέα στοιχεία πέρα από αυτό. Οι πηγές που ακολουθούν είναι αυτές που χρησιμοποιεί το έγγραφο.</p>
+      </div>
+    </div>
+    <div class="src-grid" id="srcGrid"></div>
+    <div class="method">
+      <p><b>Έρευνα και έλεγχος.</b> Τα στοιχεία συγκεντρώθηκαν από επίσημες ολυμπιακές πηγές, την επίσημη ιστοσελίδα της ΑΕΚ και ελληνικά αθλητικά μέσα. Στη συνέχεια ελέγχθηκαν χρονολογικά απέναντι στο aek.gr.</p>
+      <p><b>Γεγονότα και ερμηνείες.</b> Οι ενότητες 01–04 περιέχουν γεγονότα. Η περιγραφή του αθλήματος και των τριών ολυμπιακών όπλων στην ενότητα 01 προστέθηκε από επιπλέον έρευνα, εκτός του εγγράφου, με τις πηγές της σημειωμένες εκεί. Οι εικόνες του site είναι γραφικές αναπαραστάσεις και όχι υλικό αρχείου.</p>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span><b>ΑΕΚ · Ξιφασκία</b></span>
+    <span>Τμήμα Ξιφασκίας ΑΕΚ · Στοιχεία έως 16 Νοεμβρίου 2026</span>
+    <span><a href="#top">Επιστροφή στην αρχή ↑</a></span>
+  </div>
+</footer>
+
+<div class="toast" id="toast" hidden>Αντιγράφηκε</div>
+
+<script>
+(function(){
+const L = {E:'',MP:'',A:''};
+const AEK = {ok:'',partial:'',none:''};
+const S = {
+  hoc1:['ΕΟΕ – Λέων Πύργος','https://www.hoc.gr/?p=1910'],
+  oPy:['Olympedia – Leon Pyrgos','https://www.olympedia.org/athletes/22382'],
+  oGe:['Olympedia – Ioannis Georgiadis','https://www.olympedia.org/athletes/22363'],
+  hoc2:['ΕΟΕ – Γ. Γεωργιάδης','https://www.hoc.gr/?p=1620'],
+  oc96:['Olympics.com – Sabre 1896','https://olympics.com/en/olympic-games/athens-1896/results/fencing/sabre-individual-men'],
+  o06:['Olympedia – Sabre Team 1906','https://www.olympedia.org/results/72402'],
+  o06b:['Olympedia – Fencing 1906','https://www.olympedia.org/editions/4/sports/FEN'],
+  fie:['Olympedia – FIE','https://www.olympedia.org/organizations/60'],
+  hist:['aek.gr – Ιστορία','https://www.aek.gr/history/'],
+  tit:['aek.gr – Τίτλοι','https://www.aek.gr/titloi/'],
+  xif:['aek.gr – Ξιφασκία','https://www.aek.gr/xifaskia/'],
+  cent:['aek.gr – 100 χρόνια ΑΕΚ','https://www.aek.gr/1924-2024-enas-aionas-aek/'],
+  s24:['SPORT24 – Ένας αιώνας Ερασιτεχνική ΑΕΚ','https://sport24.gr/handball/enas-aionas-erasitechniki-aek-i-mana-tis-enosis-prostateyei-ton-skopo-tis-idryseos-tis.10290954.html'],
+  aekcom:['aek.com – Fencing Section (αρχείο)','http://www.aek.com/fencing/index.html'],
+  elw:['Βικιπαίδεια – Α.Ε.Κ. (ξιφασκία)','https://el.wikipedia.org/wiki/%CE%91.%CE%95.%CE%9A._(%CE%BE%CE%B9%CF%86%CE%B1%CF%83%CE%BA%CE%AF%CE%B1)'],
+  w04:['Wikipedia – Fencing 2004','https://en.wikipedia.org/wiki/Fencing_at_the_2004_Summer_Olympics'],
+  fn04:['fencing.net – Athens 2004','https://fencing.net/?p=761'],
+  eox14:['ΕΟΞ – Σόφια 2014','https://www.fencing.org.gr/index.php/gr/?option=com_content&view=article&id=462'],
+  adult:['aek.gr – Τμήμα ενηλίκων','https://www.aek.gr/archi-gia-to-neo-tmima-xifaskias-enilikon/'],
+  bud:['aek.gr – Βουδαπέστη 2019','https://www.aek.gr/dora-gkoyntoyra-quot-megalo-metallio-kai-pleon-tis-koitao-oles-sta-matia-quot/'],
+  vima:['Το Βήμα – Κάιρο 2022','https://www.tovima.gr/2022/07/21/sports/xalkini-i-georgiadou-sto-pagkosmio-protathlima-ksifaskias-pempti-i-gkountoura/amp/'],
+  lifo:['LIFO – Μιλάνο 2023','https://www.lifo.gr/now/sport/xifaskia-deyteri-ston-kosmo-i-despoina-georgiadoy-triti-i-dora-gkoyntoyra'],
+  fieG:['FIE – Gkountoura','https://fie.org/athletes/32856'],
+  gaz20:['Gazzetta – Πρωτάθλημα ανδρών 2020','https://www.gazzetta.gr/other-sports/ksifaskia/article/1524642/aek-protathlitria-ellados-stin-xifaskia-vid'],
+  kart:['aek.gr – Καλομοίρης πρωταθλητής','https://www.aek.gr/9-288-kartes-filoy-aek-2020-21/'],
+  pt21:['Protothema – 2021','https://www.protothema.gr/sports/article/1161390/xifaskia-goudoura-kai-aek-thriamveusan-sto-panellinio-protathlima-spathis/'],
+  a21:['AEK1924 – 10ο σερί','https://www.aek1924.gr/2021/09/12/sikosan-to-10o-seri-protathlima-ta-koritsia-tis-aek-stin-xifaskia/'],
+  tok1:['aek.gr – Πρόκριση στο Τόκιο','https://www.aek.gr/stoys-olympiakoys-agones-toy-tokio-i-dora-gkoyntoyra/'],
+  tok2:['aek.gr – Ο αγώνας στο Τόκιο','https://www.aek.gr/spoydaies-empeiries-gia-tin-gkoyntoyra/'],
+  tok3:['Olympics.com – Tokyo 2020 προφίλ','https://stacy.olympics.com/tokyo-2020/olympic-games/hi/results/fencing/athlete-profile-n1449863-gkountoura-theodora.htm'],
+  orl:['aek.gr – Ορλεάνη 2021','https://www.aek.gr/2i-ston-kosmo-i-gkoyntoyra/'],
+  r22:['aek.gr – 16η θέση 2022','https://www.aek.gr/stin-16i-thesi-i-xifaskia/'],
+  r25:['aek.gr – Άνοδος μίας θέσης','https://www.aek.gr/anodos-mias-thesis-gia-tin-xifaskia/'],
+  ast:['athletestories.gr – Δ. Γκουντούρα','https://www.athletestories.gr/author/doragoudoura/'],
+  s23:['aek.gr – Σεζόν 2022–23','https://www.aek.gr/2022-2023-mia-sezon-gemati-koypes-gemati-epitychies-gemati-aek/'],
+  s24k:['SPORT24 – Κύπελλο σπάθης 2025','https://www.sport24.gr/xifaskia/kipello-spathis-o-xifomaxos-tis-aek-panagiotis-kontoeidis-nikitis-stous-andres-i-kourousi-thriamvefse-stis-ginaikes/'],
+  ak24:['AEK1924 – Ακαδημία 2024','https://www.aek1924.gr/2024/09/07/xifaskia-i-aek-anakoinose-tin-enarxi-eggrafon-kai-proponiseon-tis-akadimias/'],
+  tr24:['AEK1924 – 14 μεταγραφές','https://www.aek1924.gr/2024/09/06/xifaskia-14-metagrafikes-kiniseis-i-enosi/'],
+  pr:['aek.gr – Προπονήσεις ξιφασκίας','https://www.aek.gr/proponiseis-xifaskias/'],
+  ch25:['aek.gr – Πρωταθλητής ο Κοντοειδής','https://www.aek.gr/protathlitis-elladas-o-kontoeidis-2i-thesi-i-aek/'],
+  cup25:['aek.gr – Κυπελλούχος ο Κοντοειδής','https://www.aek.gr/kypelloychos-kai-pali-o-kontoeidis/'],
+  cup25b:['aek.gr – Κυπελλούχος και πάλι','https://www.aek.gr/kypelloychos-kai-pali-o-kontoeidis-2/'],
+  ep26:['aek.gr – 5η στο ξίφος μονομαχίας','https://www.aek.gr/stin-5i-thesi-sto-xifos-monomachias-i-aek/'],
+  med26:['aek.gr – Μεσογειακοί 2026','https://www.aek.gr/stin-15i-thesi-o-kontoeidis/'],
+  rk26:['aek.gr – Κορυφαίος ξιφομάχος','https://www.aek.gr/koryfaios-xifomachos-tis-elladas-o-kontoeidis/'],
+  pap:['aek.gr – Πρωταθλητής ο Παπαδημητρίου','https://www.aek.gr/protathlitis-elladas-o-papadimitrioy/'],
+  tr26:['aek.gr – Μεταγραφές 2026','https://www.aek.gr/oi-metagrafes-tis-aek-stin-xifaskia/'],
+  nov26:['aek.gr – Πυλαία και Παιανία','https://www.aek.gr/kala-plasarismata-se-pylaia-kai-paiania/'],
+  fieH:['FIE – Fencing History','https://fie.org/fie/history']
+};
+const src = ks => ks.map(k=>`<a href="${S[k][1]}" target="_blank" rel="noopener">${S[k][0]}</a>`).join(' · ');
+
+const EV = [
+ {y:'1896',d:'7 Απριλίου',c:'olympic',s:'Ο Πύργος, πρώτος Έλληνας Ολυμπιονίκης',t:'Ο Λέων Πύργος γίνεται ο πρώτος Έλληνας Ολυμπιονίκης της σύγχρονης εποχής',b:'Στο Ζάππειο νικά 3–1 τον Γάλλο Joanni Perronet στο ξίφος ασκήσεως διδασκάλων.',w:'Η ελληνική ολυμπιακή ιστορία ξεκινά με ένα ξίφος. Αυτό είναι η ισχυρότερη «ρίζα» για κάθε καμπάνια ξιφασκίας.',l:'E',a:null,k:['hoc1','oPy']},
+ {y:'1896',d:'9 Απριλίου',c:'olympic',s:'Σπάθη: 1–2 για την Ελλάδα',t:'Στη σπάθη, χρυσό ο Γεωργιάδης και αργυρό ο Καράκαλος',b:'Ο Ιωάννης Γεωργιάδης κερδίζει αήττητος. Μαζί με το χάλκινο του Πιερράκου-Μαυρομιχάλη στο ξίφος ασκήσεως, η Ελλάδα κλείνει με 2 χρυσά, 1 αργυρό και 1 χάλκινο.',w:'Η σπάθη είναι το ιστορικό όπλο της ΑΕΚ. Από το 1896 ως τη Νέα Φιλαδέλφεια υπάρχει ένα κοινό νήμα.',l:'E',a:null,k:['oc96','hoc2','oGe']},
+ {y:'1906',d:'28 Απριλίου',c:'olympic',s:'Ο Γεωργιάδης ξανά χρυσός',t:'Μεσολυμπιακοί Αγώνες: ο Γεωργιάδης κερδίζει ξανά τη σπάθη',b:'Η Ελλάδα παίρνει αργυρό στο ομαδικό σπάθης με τους Γεωργιάδη, Σακοράφο, Ζορμπά και Κορδογιάννη.',w:'Η δεύτερη ολυμπιακή διοργάνωση στην Αθήνα στέφει ξανά ελληνική σπάθη.',l:'E',a:null,k:['o06','o06b']},
+ {y:'1913',d:'',c:'olympic',s:'Ίδρυση της FIE',t:'Ιδρύεται η Διεθνής Ομοσπονδία Ξιφασκίας (FIE)',b:'Η FIE ορίζει τους κανόνες και το διεθνές πρόγραμμα του αθλήματος.',w:'Είναι το διεθνές πλαίσιο μέσα στο οποίο αγωνίζονται σήμερα οι αθλητές της ΑΕΚ.',l:'E',a:null,k:['fie']},
+ {y:'1924',d:'13 Απριλίου',c:'club',s:'Ίδρυση της ΑΕΚ',t:'Ιδρύεται η ΑΕΚ, στη Βερανζέρου 24',b:'Πρώτος πρόεδρος είναι ο Κωνσταντίνος Σπανούδης. Με την ίδρυση δημιουργούνται τα τμήματα ποδοσφαίρου, καλαθοσφαίρισης, βόλεϊ ανδρών και στίβου.',w:'Είναι η γέννηση του πολυαθλητικού συλλόγου που 72 χρόνια αργότερα θα αποκτήσει τμήμα ξιφασκίας.',l:'E',a:'ok',k:['hist','s24']},
+ {y:'1996',d:'',c:'aek',s:'Ίδρυση του Τμήματος Ξιφασκίας',t:'Ιδρύεται το Τμήμα Ξιφασκίας της ΑΕΚ',b:'Το τμήμα ξεκινά με έμφαση στη σπάθη. Πρωτεργάτης είναι ο Κώστας Ποτού, που είναι έφορος του τμήματος και σήμερα.',w:'Είναι η γέννηση του τμήματος, ακριβώς 100 χρόνια μετά τους πρώτους Ολυμπιακούς Αγώνες. Το 2026 συμπληρώνει 30 χρόνια.',l:'E',a:'ok',k:['tit','xif','cent','s24']},
+ {y:'1997',d:'',c:'aek',s:'Πρώτος προπονητής',t:'Ο Θανάσης Τσαμαλδούπης αναλαμβάνει προπονητής',b:'Μένει στο τμήμα για περίπου 7 χρόνια. Τον διαδέχονται οι Κωνσταντίνος Ποτού και Νίκος Χήρης.',w:'Είναι ο πρώτος καταγεγραμμένος προπονητής του τμήματος.',l:'MP',a:'none',k:['aekcom']},
+ {y:'2000',d:'',c:'aek',s:'Πρώτα βάθρα',t:'3η θέση στο ομαδικό σπάθης εφήβων',b:'Η ομάδα ανδρών τερματίζει 6η.',w:'Είναι τα πρώτα καταγεγραμμένα αποτελέσματα, 4 χρόνια μετά την ίδρυση.',l:'MP',a:'none',k:['elw']},
+ {y:'2004',d:'14–22 Αυγούστου',c:'olympic',s:'Αθήνα 2004',t:'Η Αθήνα φιλοξενεί ξανά την ολυμπιακή ξιφασκία',b:'Στην Αίθουσα Ξιφασκίας του Ελληνικού αγωνίζονται 223 ξιφομάχοι από 42 χώρες. Η Ιωάννα Χρήστου τερματίζει 8η στο ξίφος μονομαχίας.',w:'Η Αθήνα γίνεται ξανά το κέντρο της ολυμπιακής ξιφασκίας, στο 8ο έτος του τμήματος της ΑΕΚ.',l:'E',a:null,k:['w04','fn04']},
+ {y:'2006',d:'Απρίλιος',c:'aek',s:'Χάλκινο ανδρών',t:'Χάλκινο στο ομαδικό σπάθης ανδρών',b:'Είναι το πρώτο πανελλήνιο βάθρο ενηλίκων που έχει καταγραφεί.',w:'Δείχνει ότι το τμήμα πλησιάζει την κορυφή.',l:'MP',a:'none',k:['elw']},
+ {y:'2012',d:'',c:'aek',s:'Πρώτος τίτλος',t:'Πρώτο πανελλήνιο πρωτάθλημα σπάθης γυναικών',b:'Η γυναικεία ομάδα κατακτά τον πρώτο τίτλο του συλλόγου στην ξιφασκία.',w:'Ξεκινά μια δεκαετία χωρίς απώλεια τίτλου.',l:'E',a:'ok',k:['hist','tit']},
+ {y:'2014',d:'Νοέμβριος',c:'intl',s:'Αργυρό στη Σόφια',t:'Αργυρό στο Ευρωπαϊκό Κύπελλο σπάθης Κ17',b:'Η γυναικεία ομάδα της ΑΕΚ παίρνει το αργυρό στη Σόφια και η Αθηνά-Ελένη Ψωφάκη το χάλκινο στο ατομικό.',w:'Είναι το πρώτο ευρωπαϊκό βάθρο ομάδας της ΑΕΚ που εντοπίσαμε.',l:'MP',a:'none',k:['eox14']},
+ {y:'2018',d:'',c:'aek',s:'Διπλή στέψη',t:'Πρώτο πρωτάθλημα ανδρών και 7ο σερί γυναικών',b:'Η ομάδα ανδρών αποτελείται από τους Βιδάλη, Κοντοειδή, Καλομοίρη και Φραγκοζίδη.',w:'Η ΑΕΚ γίνεται πρωταθλήτρια σε άνδρες και γυναίκες την ίδια χρονιά. Οι περισσότεροι πρωταθλητές βγήκαν από τις ακαδημίες.',l:'E',a:'ok',k:['hist','s24']},
+ {y:'2019',d:'14 Απριλίου',c:'aek',s:'8ο σερί',t:'Η ΑΕΚ πρωταθλήτρια σπάθης γυναικών για 8η συνεχή χρονιά',b:'Στην ίδια διοργάνωση ο ατομικός τίτλος πηγαίνει επίσης σε αθλήτρια της ΑΕΚ.',w:'Η σειρά συνεχίζεται.',l:'E',a:'ok',k:['hist']},
+ {y:'2019',d:'20 Ιουλίου',c:'intl',s:'Χάλκινο στη Βουδαπέστη',t:'Χάλκινο μετάλλιο για την ΑΕΚ στο Παγκόσμιο Πρωτάθλημα',b:'Η Δώρα Γκουντούρα, με τη φανέλα της ΑΕΚ, κερδίζει το πρώτο μετάλλιο της Ελλάδας σε Παγκόσμιο Πρωτάθλημα ξιφασκίας ενηλίκων.',w:'Είναι η μεγαλύτερη διεθνής επιτυχία με τα χρώματα της ΑΕΚ.',l:'E',a:'ok',k:['bud','vima','lifo']},
+ {y:'2020',d:'Μάρτιος',c:'intl',s:'3η στο «Ακρόπολις»',t:'Αθλήτρια της ΑΕΚ 3η στο Παγκόσμιο Κύπελλο «Ακρόπολις»',b:'Διεθνές βάθρο για την ΑΕΚ στην Αθήνα, μπροστά στο ελληνικό κοινό.',w:'Ένα διεθνές βάθρο για αθλήτρια της ΑΕΚ, μπροστά στο ελληνικό κοινό.',l:'E',a:'none',k:['fieG','elw']},
+ {y:'2020',d:'',c:'aek',s:'2ο ανδρών, 9ο γυναικών',t:'Δεύτερο πρωτάθλημα ανδρών και 9ο σερί γυναικών',b:'Ο Βαγγέλης Καλομοίρης γίνεται πρωταθλητής Ελλάδας στο ατομικό.',w:'Είναι το δεύτερο «νταμπλ» ανδρών–γυναικών.',l:'E',a:'ok',k:['hist','kart','gaz20']},
+ {y:'2021',d:'',c:'aek',s:'10ο σερί',t:'10ο συνεχόμενο πρωτάθλημα σπάθης γυναικών',b:'Η ομάδα (Γκουντούρα, Μπένου, Μαυρικάκη, Χούρι) κερδίζει 45–17 στον τελικό.',w:'Μια ολόκληρη δεκαετία στην κορυφή. Είναι το ισχυρότερο αφηγηματικό ατού του τμήματος.',l:'E',a:'ok',k:['pt21','a21','cent']},
+ {y:'2021',d:'26 Ιουλίου',c:'intl',s:'Η ΑΕΚ στο Τόκιο',t:'Αθλήτρια της ΑΕΚ στους Ολυμπιακούς Αγώνες του Τόκιο',b:'Αναχωρεί στις 19/7 με τον προπονητή της ΑΕΚ Θανάση Δελενίκα και αγωνίζεται στις 26 Ιουλίου, στην πρώτη της Ολυμπιάδα.',w:'Το όνομά της προστίθεται στη μεγάλη λίστα αθλητών της ΑΕΚ που αγωνίστηκαν στους Ολυμπιακούς Αγώνες.',l:'E',a:'ok',k:['tok1','tok2','tok3']},
+ {y:'2021',d:'13 Νοεμβρίου',c:'intl',s:'Αργυρό στην Ορλεάνη',t:'Αργυρό για αθλήτρια της ΑΕΚ στο Παγκόσμιο Κύπελλο της Ορλεάνης',b:'Ο τελικός είναι ελληνικός. Στη διαδρομή η αθλήτρια της ΑΕΚ νικά 15–9 το Νο2 του κόσμου, τη Manon Apithy-Brunet.',w:'Διεθνές βάθρο με τα χρώματα της ΑΕΚ.',l:'E',a:'ok',k:['orl']},
+ {y:'2022',d:'',c:'club',s:'Τρία όπλα',t:'Πρώτη χρονιά και στα 3 όπλα',b:'Το τμήμα προσθέτει ξίφος ασκήσεως και ξίφος μονομαχίας.',w:'Η ακαδημία μπορεί πλέον να υποδεχτεί κάθε παιδί, όποιο όπλο κι αν του ταιριάζει.',l:'E',a:'ok',k:['r22']},
+ {y:'2023',d:'',c:'aek',s:'Κοντοειδής πρωταθλητής',t:'Ο Παναγιώτης Κοντοειδής πρωταθλητής Ελλάδας στη σπάθη',b:'Ο απολογισμός της σεζόν 2022–23 στο aek.gr τον αναφέρει ως πρωταθλητή Ελλάδας ανδρών.',w:'Ο τίτλος ανήκει σε αθλητή που μεγάλωσε στο τμήμα.',l:'E',a:'ok',k:['s23','s24k']},
+ {y:'2025',d:'17–18 Μαΐου',c:'aek',s:'Πρωταθλητής και κυπελλούχος',t:'Ο Κοντοειδής πρωταθλητής Ελλάδας και δύο φορές κυπελλούχος',b:'Στην Παιανία κερδίζει τον τελικό 15–12 και η ΑΕΚ παίρνει τη 2η θέση στο ομαδικό. Μέσα στη χρονιά κερδίζει και δύο Κύπελλα σπάθης. Στη βαθμολογία σωματείων η ΑΕΚ ανεβαίνει στην 9η θέση ανάμεσα σε 44.',w:'Η σπάθη ανδρών της ΑΕΚ ξαναβρίσκει την κορυφή.',l:'E',a:'ok',k:['ch25','cup25','cup25b','r25']},
+ {y:'2026',d:'Μάιος',c:'club',s:'Το ξίφος μονομαχίας φέρνει αποτελέσματα',t:'5η θέση γυναικών στο πανελλήνιο ξίφους μονομαχίας',b:'Τον Ιούνιο ο Αγαπητός Παπαδημητρίου γίνεται πρωταθλητής Ελλάδας βετεράνων 40+.',w:'Είναι τα πρώτα σημαντικά αποτελέσματα στα νέα όπλα.',l:'E',a:'ok',k:['ep26','pap']},
+ {y:'2026',d:'Αύγουστος',c:'intl',s:'Μεσογειακοί Αγώνες',t:'Ο Κοντοειδής στους Μεσογειακούς Αγώνες του Τάραντα',b:'Ήταν ο μόνος Έλληνας στη σπάθη ανδρών. Βρίσκεται στην 1η θέση της ελληνικής κατάταξης σπάθης ανδρών με 372,50 βαθμούς.',w:'Αθλητής της ΑΕΚ εκπροσωπεί τη χώρα σε μεγάλη διεθνή διοργάνωση.',l:'MP',a:'ok',k:['med26','rk26']},
+ {y:'2026',d:'Νοέμβριος',c:'club',s:'Η επόμενη γενιά',t:'Η ακαδημία αγωνίζεται σε Πυλαία και Παιανία',b:'Αθλητές από Κ13 ως Άνδρες αγωνίζονται σε ξίφος μονομαχίας και σπάθη. Τον Σεπτέμβριο ανακοινώθηκαν 4 νέες μεταγραφές.',w:'Η επόμενη γενιά είναι ήδη στις πίστες, στη χρονιά που το τμήμα κλείνει 30 χρόνια.',l:'E',a:'ok',k:['nov26','tr26']}
+];
+
+/* ---------- timeline ---------- */
+EV.reverse();
+const piste=document.getElementById('piste'), detail=document.getElementById('detail');
+let cur=0, filt='all';
+EV.forEach((e,i)=>{
+  const b=document.createElement('button');
+  b.className='stop'; b.dataset.cat=e.c; b.dataset.i=i; b.setAttribute('role','listitem');
+  b.innerHTML=`<span class="sy num">${e.y}</span><span class="sd">${e.d||'&nbsp;'}</span><span class="pin"></span><span class="st">${e.s}</span>`;
+  b.addEventListener('click',()=>select(i,true));
+  piste.appendChild(b);
+});
+function visible(){return [...piste.children].filter(x=>!x.hidden).map(x=>+x.dataset.i)}
+function select(i,scroll){
+  cur=i; const e=EV[i];
+  [...piste.children].forEach(x=>x.classList.toggle('on',+x.dataset.i===i));
+  detail.innerHTML=`<div><div class="dy num">${e.y}</div><div class="dd">${e.d||''}</div></div>
+  <div><h3>${e.t}</h3><div style="height:14px"></div><p>${e.b}</p>
+  ${e.n?`<p class="src" style="color:#e3a54a">Σημείωση: ${e.n}</p>`:''}
+  <p class="src">Πηγές: ${src(e.k)}</p></div>`;
+  if(scroll){const el=piste.querySelector(`[data-i="${i}"]`);const w=document.getElementById('pisteWrap');w.scrollTo({left:el.offsetLeft-w.clientWidth/2+66,behavior:matchMedia('(prefers-reduced-motion:reduce)').matches?'auto':'smooth'})}
+}
+document.querySelectorAll('.chip').forEach(c=>c.addEventListener('click',()=>{
+  filt=c.dataset.f;
+  document.querySelectorAll('.chip').forEach(x=>x.setAttribute('aria-pressed',x===c));
+  [...piste.children].forEach(x=>x.hidden=!(filt==='all'||x.dataset.cat===filt||(filt==='aek'&&x.dataset.cat==='aek')));
+  const v=visible(); if(!v.includes(cur)) select(v[0],true);
+}));
+document.getElementById('prev').onclick=()=>{const v=visible();const p=v.indexOf(cur);select(v[(p-1+v.length)%v.length],true)};
+document.getElementById('next').onclick=()=>{const v=visible();const p=v.indexOf(cur);select(v[(p+1)%v.length],true)};
+document.getElementById('pisteWrap').addEventListener('keydown',ev=>{if(ev.key==='ArrowRight'){document.getElementById('next').click();ev.preventDefault()}if(ev.key==='ArrowLeft'){document.getElementById('prev').click();ev.preventDefault()}});
+select(0,false);
+
+
+/* ---------- facts ---------- */
+const F=[
+ 'Ο πρώτος Έλληνας Ολυμπιονίκης των σύγχρονων Αγώνων ήταν ξιφομάχος: ο Λέων Πύργος, στις 7 Απριλίου 1896.',
+ 'Ο Πύργος νίκησε τον Γάλλο αντίπαλό του με 3–1, σε έναν και μοναδικό αγώνα.',
+ 'Στο πρώτο ολυμπιακό αγώνισμα σπάθης της ιστορίας (1896) το χρυσό και το αργυρό τα πήραν Έλληνες: ο Γεωργιάδης και ο Καράκαλος.',
+ 'Ο Ιωάννης Γεωργιάδης κέρδισε τη σπάθη του 1896 χωρίς καμία ήττα και ξανά το 1906 στην Αθήνα.',
+ 'Οι αγώνες ξιφασκίας του 1896 έγιναν στο Ζάππειο.',
+ 'Το Τμήμα Ξιφασκίας της ΑΕΚ ιδρύθηκε το 1996, ακριβώς 100 χρόνια μετά τους πρώτους Ολυμπιακούς Αγώνες.',
+ 'Ο Απρίλιος είναι ο μήνας μας: ο Πύργος στις 7, ο Γεωργιάδης στις 9 (1896) και η ίδρυση της ΑΕΚ στις 13 Απριλίου 1924.',
+ 'Η γυναικεία ομάδα σπάθης της ΑΕΚ κέρδισε 10 συνεχόμενα πανελλήνια πρωταθλήματα, από το 2012 ως το 2021.',
+ 'Το 2018 η ΑΕΚ στέφθηκε πρωταθλήτρια σπάθης σε άνδρες και γυναίκες την ίδια χρονιά, και ξανά το 2020.',
+ 'Το πρώτο μετάλλιο της Ελλάδας σε Παγκόσμιο Πρωτάθλημα ξιφασκίας ενηλίκων ήρθε με τη φανέλα της ΑΕΚ: χάλκινο στη Βουδαπέστη το 2019.',
+ 'Από το 2018 ως το 2021 ο ατομικός τίτλος Ελλάδας στη σπάθη γυναικών πήγε τέσσερις συνεχόμενες φορές σε αθλήτρια της ΑΕΚ, τη Δώρα Γκουντούρα.',
+ 'Η ΑΕΚ έχει συνολικά 12 πανελλήνια πρωταθλήματα σπάθης: 10 γυναικών και 2 ανδρών.',
+ 'Ο Παναγιώτης Κοντοειδής της ΑΕΚ στέφθηκε πρωταθλητής Ελλάδας στη σπάθη το 2025, νικώντας 15–12 στον τελικό.'
+];
+let fi=0;const ft=document.getElementById('factText'),fc=document.getElementById('fCount'),fl=document.getElementById('factList');
+F.forEach((f,i)=>{const li=document.createElement('li');li.innerHTML=`<button><b class="num">${String(i+1).padStart(2,'0')}</b><span>${f}</span></button>`;li.firstChild.onclick=()=>showF(i);fl.appendChild(li)});
+function showF(i){fi=(i+F.length)%F.length;ft.textContent='…'+F[fi].charAt(0).toLowerCase()+F[fi].slice(1).replace(/\.$/,';');fc.textContent=`${fi+1} / ${F.length}`;[...fl.children].forEach((li,j)=>li.firstChild.setAttribute('aria-current',j===fi))}
+document.getElementById('fPrev').onclick=()=>showF(fi-1);
+document.getElementById('fNext').onclick=()=>showF(fi+1);
+document.getElementById('fCopy').onclick=()=>copy('Ήξερες ότι '+ft.textContent.slice(1));
+showF(0);
+
+/* ---------- sources ---------- */
+const groups={'Επίσημες πηγές ΑΕΚ':['hist','tit','xif','cent','adult','bud','tok1','tok2','orl','r22','r25','s23','ch25','cup25','cup25b','ep26','med26','rk26','pap','tr26','nov26','pr','kart','aekcom'],'Ολυμπιακές και διεθνείς':['oPy','oGe','hoc1','hoc2','oc96','o06','o06b','fie','fieH','fieG','tok3','w04','fn04','eox14'],'Μέσα ενημέρωσης και δευτερεύουσες':['s24','s24k','gaz20','pt21','a21','vima','lifo','ast','ak24','tr24','elw']};
+document.getElementById('srcGrid').innerHTML=Object.entries(groups).map(([h,ks])=>`<div><h3>${h}</h3><ul>${ks.map(k=>`<li><a href="${S[k][1]}" target="_blank" rel="noopener">${S[k][0]}</a></li>`).join('')}</ul></div>`).join('');
+
+
+/* ---------- accordion animation ---------- */
+(function(){
+  const items=[...document.querySelectorAll('.acc details')];
+  const still=()=>matchMedia('(prefers-reduced-motion: reduce)').matches||!document.body.animate;
+  function closeD(d){
+    const body=d.querySelector('.body');
+    if(!d.open) return;
+    if(still()){d.open=false;return}
+    d.dataset.anim='1';
+    const pb=getComputedStyle(body).paddingBottom, h=body.offsetHeight;
+    d.classList.add('closing');
+    const a=body.animate([{height:h+'px',paddingBottom:pb,opacity:1},{height:'0px',paddingBottom:'0px',opacity:0}],{duration:340,easing:'cubic-bezier(.4,0,.2,1)'});
+    a.onfinish=()=>{d.open=false;d.classList.remove('closing');delete d.dataset.anim};
+  }
+  function openD(d){
+    const body=d.querySelector('.body');
+    d.open=true;
+    if(still()) return;
+    d.dataset.anim='1';
+    const pb=getComputedStyle(body).paddingBottom, h=body.offsetHeight;
+    const a=body.animate([{height:'0px',paddingBottom:'0px',opacity:0,transform:'translateY(-6px)'},{height:h+'px',paddingBottom:pb,opacity:1,transform:'none'}],{duration:420,easing:'cubic-bezier(.2,.7,.2,1)'});
+    a.onfinish=()=>delete d.dataset.anim;
+  }
+  items.forEach(d=>{
+    d.querySelector('summary').addEventListener('click',e=>{
+      e.preventDefault();
+      if(d.dataset.anim) return;
+      if(d.open){closeD(d);return}
+      items.forEach(o=>{if(o!==d&&o.open)closeD(o)});
+      openD(d);
+    });
+  });
+})();
+/* ---------- utilities ---------- */
+const toast=document.getElementById('toast');
+function copy(txt){const done=()=>{toast.hidden=false;clearTimeout(copy.t);copy.t=setTimeout(()=>toast.hidden=true,1600)};
+ try{navigator.clipboard.writeText(txt).then(done,()=>{toast.textContent='Επιλέξτε και αντιγράψτε το κείμενο χειροκίνητα';done();setTimeout(()=>toast.textContent='Αντιγράφηκε',1700)})}catch(e){toast.textContent='Επιλέξτε και αντιγράψτε το κείμενο χειροκίνητα';done()}}
+const navLinks=[...document.querySelectorAll('.nav a')];
+const secs=navLinks.map(a=>document.querySelector(a.getAttribute('href')));
+const prog=document.getElementById('progress');
+function onScroll(){const h=document.documentElement;prog.style.width=(h.scrollTop/(h.scrollHeight-h.clientHeight)*100)+'%';
+ let idx=-1;const line=innerHeight*0.4;secs.forEach((s,i)=>{if(s&&s.getBoundingClientRect().top<line)idx=i});
+ if(h.scrollTop+h.clientHeight>=h.scrollHeight-4)idx=secs.length-1;
+ navLinks.forEach((a,i)=>a.classList.toggle('on',i===idx));
+ if(idx>=0&&idx!==onScroll.last){onScroll.last=idx;const a=navLinks[idx],n=a.parentElement,ar=a.getBoundingClientRect(),nr=n.getBoundingClientRect();
+  const d=ar.left-nr.left-(nr.width-ar.width)/2;if(n.scrollWidth>n.clientWidth)n.scrollLeft+=d}}
+addEventListener('scroll',onScroll,{passive:true});onScroll();
+const pw=document.getElementById('pisteWrap');if(pw){const pe=()=>pw.classList.toggle('end',pw.scrollLeft+pw.clientWidth>=pw.scrollWidth-4);pw.addEventListener('scroll',pe,{passive:true});addEventListener('resize',pe);pe();}
+})();
+</script>
+</body>
+</html>
